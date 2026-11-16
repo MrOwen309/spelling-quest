@@ -1,6 +1,6 @@
 // Spelling Quest offline support: always try the internet first (so word-list
 // changes on GitHub show up), and fall back to the saved copy when offline.
-const CACHE = "spelling-quest-v2";
+const CACHE = "spelling-quest-v3";
 const FILES = ["./", "./index.html", "./words.txt", "./manifest.webmanifest",
                "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
