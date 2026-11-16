@@ -25,6 +25,7 @@
   color-scheme: light;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{margin:0;background:linear-gradient(180deg,var(--sky),var(--sky2) 70%);background-color:var(--sky);color:var(--ink);font-family:var(--body);font-size:18px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));
@@ -39,6 +40,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:4px soli
 .big.mint{background:var(--mint);box-shadow:0 6px 0 var(--mint-d)}
 .big.grape{background:var(--grape);box-shadow:0 6px 0 #5a3fd6}
 .big small{display:block;font-family:var(--body);font-size:.85rem;font-weight:700;opacity:.9}
+.tabs{display:flex;gap:6px;background:var(--sky2);padding:5px;border-radius:16px}
+.tab{flex:1;padding:10px;border-radius:12px;font-weight:700;background:transparent;color:var(--muted)}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 2px 0 rgba(36,50,74,.1)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.bars{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:110px;padding-top:6px}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px;min-width:0}
+.bar i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:var(--line);min-height:4px}
+.bar i.on{background:linear-gradient(180deg,var(--grape),#a993ff)}
+.bar span{font-size:.7rem;color:var(--muted)}
+.bar.today span{color:var(--ink);font-weight:700}
+.wrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid var(--line);flex-wrap:wrap}
+.wrow:last-child{border-bottom:0}
+.wrow b{font-family:var(--display);font-size:1.3rem}
+.wrow .sub{font-size:.9rem;color:var(--muted);flex-basis:100%;margin-top:-4px}
+.chip{padding:4px 10px;border-radius:10px;font-size:.85rem;font-weight:700;white-space:nowrap}
+.chip.good{background:#d7f5e8;color:#16774f}.chip.ok{background:#fff1cc;color:#7a5600}
+.chip.bad{background:#ffe0e6;color:#b0223f}.chip.new{background:var(--sky2);color:var(--muted)}
+.typo{font-family:var(--display);color:var(--bad);font-weight:600}
 .ghost{background:transparent;color:var(--muted);font-weight:700;padding:10px 14px;border-radius:14px;font-size:1rem}
 .ghost:hover{background:rgba(255,255,255,.5)}
 
@@ -90,7 +109,7 @@ input,textarea{-webkit-user-select:text;user-select:text}
 .tile:active{transform:translateY(3px);box-shadow:0 2px 0 var(--gold-d)}
 .tile.used{visibility:hidden}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.msg{text-align:center;font-weight:700;min-height:1.5em;color:var(--muted)}
+.msg{text-align:center;font-weight:700;min-height:1.5em;margin:0;color:var(--muted)}
 .msg.bad{color:var(--bad)}
 .reveal{text-align:center;font-family:var(--display);font-size:3rem;color:var(--grape);letter-spacing:.08em}
 .shake{animation:shake .4s}
@@ -306,6 +325,7 @@ const SAVE_KEY = "spellingQuest.v1";
 
 // ---------- state ----------
 let S = load() || {gems:0,xp:0,stickers:[],streak:0,lastDay:null,words:DEFAULT_WORDS,miss:{},rounds:0,bestCombo:0,sound:true};
+S.ws=S.ws||{};S.log=S.log||{};
 function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))}catch(e){return null}}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
@@ -431,7 +451,7 @@ function home(){
     <div class="album">${STICKERS.map(([e,r])=>owned.has(e)?`<div class="slot ${r}">${e}</div>`:`<div class="slot locked">?</div>`).join("")}</div>
     ${tricky.length?`<div><p class="note" style="margin-bottom:6px">Words to practice (they show up more often):</p><div class="tricky">${tricky.map(w=>`<span>${esc(w)}</span>`).join("")}</div></div>`:""}
   </div>
-  <div class="row"><button class="ghost" id="grown">⚙︎ Grown-ups: change word list</button></div>`;
+  <div class="row"><button class="ghost" id="grown">⚙︎ Grown-ups: progress &amp; words</button></div>`;
   bindHud();
   if($("#playWeek")) $("#playWeek").onclick=()=>{sfx.tap();startRound("week")};
   $("#playAll").onclick=()=>{sfx.tap();startRound("all")};
@@ -489,7 +509,7 @@ function inputHTML(id="ans"){return `<input id="${id}" class="answer" autocomple
 function modeListen(){
   $("#area").innerHTML=`<div class="prompt">Type the word you hear</div>${inputHTML()}<div class="row"><button class="big mint" id="check">Check ✓</button></div>`;
   const inp=$("#ans");inp.focus();
-  const go=()=>{const v=inp.value.trim().toLowerCase().replace(/[’‘]/g,"'");if(!v)return;judge(v===R.cur.W.w,()=>{inp.value="";inp.focus()})};
+  const go=()=>{const v=inp.value.trim().toLowerCase().replace(/[’‘]/g,"'");if(!v)return;judge(v===R.cur.W.w,()=>{inp.value="";inp.focus()},v)};
   $("#check").onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go()};
 }
 
@@ -524,7 +544,7 @@ function tileBoard(letters,slotsSpec,onFull){
 function modeScramble(){
   const w=R.cur.W.w;let letters=shuffle(w.split(""));
   if(letters.join("")===w&&w.length>2) letters=shuffle(letters);
-  tileBoard(letters,w.split("").map(()=>({blank:true})),(word,reset)=>judge(word===w,reset));
+  tileBoard(letters,w.split("").map(()=>({blank:true})),(word,reset)=>judge(word===w,reset,word));
   $("#area").insertAdjacentHTML("afterbegin",`<div class="prompt">Tap the letters in order</div>`);
 }
 
@@ -538,11 +558,23 @@ function modeMissing(){
   const need=idx.map(i=>chars[i]);
   const extras=shuffle("aeioulrstnhcgk".split("").filter(c=>!need.includes(c))).slice(0,6-need.length+1);
   const letters=shuffle(need.concat(extras));
-  tileBoard(letters,chars.map((c,i)=>idx.includes(i)?{blank:true}:{fixed:c}),(word,reset)=>judge(word===w,reset));
+  tileBoard(letters,chars.map((c,i)=>idx.includes(i)?{blank:true}:{fixed:c}),(word,reset)=>judge(word===w,reset,word));
   $("#area").insertAdjacentHTML("afterbegin",`<div class="prompt">Fill in the missing letters</div>`);
 }
 
-function judge(ok,retry){
+// ---------- progress tracking ----------
+function wsOf(w){return S.ws[w]=S.ws[w]||{n:0,f:0,s:0,m:0,h:"",errs:[],last:null}}
+function track(w,res){ // res: F = right first try, S = right on second try, M = missed
+  const x=wsOf(w);x.n++;if(res==="F")x.f++;else if(res==="S")x.s++;else x.m++;
+  x.h=(x.h+res).slice(-8);x.last=todayStr();
+  const d=todayStr();const L=S.log[d]=S.log[d]||{w:0,f:0,q:0};L.w++;if(res==="F")L.f++;
+  const keys=Object.keys(S.log).sort();while(keys.length>90)delete S.log[keys.shift()];
+}
+function trackErr(w,typed,mode){
+  if(mode!=="listen"||!typed)return;
+  const x=wsOf(w);x.errs.push(typed);x.errs=x.errs.slice(-6);
+}
+function judge(ok,retry,typed){
   const W=R.cur.W;
   if(ok){
     R.combo++;S.bestCombo=Math.max(S.bestCombo,R.combo);
@@ -551,7 +583,7 @@ function judge(ok,retry){
     const g=base*mult;
     R.earned+=g;R.xp+=R.cur.tries===0?20:10;S.gems+=g;
     if(R.cur.tries===0&&S.miss[W.w]) S.miss[W.w]=Math.max(0,S.miss[W.w]-1);
-    R.results[R.i]=true;save();
+    track(W.w,R.cur.tries===0?"F":"S");R.results[R.i]=true;save();
     (mult>1?sfx.big:sfx.ok)();confetti(mult>1?140:70);
     floatText(`+${g}${mult>1?` (x${mult}!)`:""}`);
     const card=$("#play-card");card.classList.remove("pop");void card.offsetWidth;card.classList.add("pop");
@@ -562,7 +594,7 @@ function judge(ok,retry){
     lockArea();setTimeout(next,1300);
     return;
   }
-  R.cur.tries++;sfx.bad();
+  R.cur.tries++;sfx.bad();trackErr(W.w,typed,R.cur.mode);
   const card=$("#play-card");card.classList.remove("shake");void card.offsetWidth;card.classList.add("shake");
   if(R.cur.tries===1){
     $("#msg").className="msg bad";
@@ -570,7 +602,7 @@ function judge(ok,retry){
     retry();return;
   }
   // second miss: reveal and copy
-  R.combo=0;S.miss[W.w]=(S.miss[W.w]||0)+1;R.results[R.i]=false;save();
+  R.combo=0;S.miss[W.w]=(S.miss[W.w]||0)+1;track(W.w,"M");R.results[R.i]=false;save();
   $("#combo").textContent="";
   $("#msg").className="msg";$("#msg").textContent="Let's learn this one. Look closely, then type it!";
   $("#area").innerHTML=`<div class="reveal pop">${esc(W.w)}</div>${inputHTML("copy")}<div class="row"><button class="big grape" id="cp">Done ✓</button></div>`;
@@ -589,6 +621,7 @@ function reward(){
   const bonus=perfect?25:0;S.gems+=bonus;R.earned+=bonus;
   const lvBefore=level();S.xp+=R.xp;const lvUp=level()>lvBefore;
   S.rounds++;
+  {const d=todayStr();const L=S.log[d]=S.log[d]||{w:0,f:0,q:0};L.q++;}
   const t=todayStr(),y=todayStr(new Date(Date.now()-864e5));
   if(S.lastDay!==t){S.streak=S.lastDay===y?S.streak+1:1;S.lastDay=t}
   // sticker roll: better odds when perfect
@@ -639,31 +672,96 @@ function gate(){
   const go=()=>{if(+$("#g").value===a*b)parent();else $("#gm").textContent="Not quite. Try again."};
   $("#gok").onclick=go;$("#g").onkeydown=e=>{if(e.key==="Enter")go()};$("#gx").onclick=home;$("#g").focus();
 }
-function parent(){
-  const list=wordList();
+function parent(tab="progress"){
   app.innerHTML=`<div class="card stack">
-    <h2>Word list</h2>
-    <p class="note" style="margin:0">These words come from <b>words.txt</b> in your GitHub repo. To change them from any phone or computer, open that file on github.com, tap the pencil icon, edit, and commit. The game picks up the new list the next time it opens. GitHub can take a minute or two to publish a change.</p>
-    ${[["week","This week"],["year","This year"],["core","Should know"]].map(([k,n])=>{const ws=list.filter(x=>x.sec===k);
-      return `<div><h3 style="font-size:1.2rem">${n} <span class="note">(${ws.length})</span></h3>${ws.length?`<div class="tricky">${ws.map(x=>`<span style="background:var(--sky2)">${esc(x.w)}</span>`).join("")}</div>`:`<p class="note" style="margin:0">None yet.</p>`}</div>`}).join("")}
-    <p class="note" style="margin:0">Each game picks ${ROUND} words. Big Review uses every section and picks school words more often than should-know words. Words she misses come back more often in both.</p>
-    <div class="row"><button class="big mint" id="rf">Check for new words</button></div>
-    <p class="msg" id="sm"></p>
-    <hr style="border:0;border-top:2px solid var(--line);width:100%">
-    <h3>Progress</h3>
-    <p class="note">${S.rounds} quests played · ${S.gems} gems · level ${level()} · ${S.stickers.length} stickers. Progress is saved on this device only.</p>
-    <div class="row" id="rz"><button class="ghost" id="rs">Reset all progress…</button></div>
+    <div class="tabs" role="tablist"><button class="tab ${tab==="progress"?"on":""}" id="tP">Progress</button><button class="tab ${tab==="words"?"on":""}" id="tW">Word list</button></div>
+    <div id="pbody" class="stack"></div>
     <div class="row"><button class="big" id="bk">← Back to game</button></div>
   </div>`;
+  $("#tP").onclick=()=>parent("progress");$("#tW").onclick=()=>parent("words");$("#bk").onclick=home;
+  (tab==="progress"?progressView:wordsView)($("#pbody"));
+}
+
+function wordStatus(w){
+  const x=S.ws[w];
+  if(!x||!x.n) return ["new","Not tried"];
+  if(x.h.length>=3&&x.h.slice(-3)==="FFF") return ["good","Mastered"];
+  if(x.h.slice(-1)==="F") return ["ok","Getting there"];
+  return ["bad","Needs practice"];
+}
+function wordDetail(w){
+  const x=S.ws[w];if(!x||!x.n) return "";
+  const typos=[...new Set(x.errs)].slice(-4);
+  return `Right first try ${x.f} of ${x.n}${typos.length?` · she wrote: ${typos.map(t=>`<span class="typo">${esc(t)}</span>`).join(", ")}`:""}`;
+}
+function troubleWords(){
+  return Object.entries(S.ws).filter(([,x])=>x.n&&x.n>x.f)
+    .sort((a,b)=>((b[1].n-b[1].f)/b[1].n-(a[1].n-a[1].f)/a[1].n)||(b[1].n-b[1].f)-(a[1].n-a[1].f)).slice(0,10).map(([w])=>w);
+}
+function progressView(el){
+  const list=wordList();
+  const days=[...Array(14)].map((_,i)=>todayStr(new Date(Date.now()-(13-i)*864e5)));
+  const active=days.filter(d=>(S.log[d]||{}).w).length;
+  const all=Object.values(S.ws);const n=all.reduce((a,x)=>a+x.n,0),f=all.reduce((a,x)=>a+x.f,0);
+  const maxW=Math.max(5,...days.map(d=>(S.log[d]||{}).w||0));
+  const week=list.filter(x=>x.sec==="week");
+  const year=[...new Set(list.filter(x=>x.sec==="year").map(x=>x.w))];
+  const yc={good:0,ok:0,bad:0,new:0};year.forEach(w=>yc[wordStatus(w)[0]]++);
+  const trouble=troubleWords();
+  const row=w=>{const [k,t]=wordStatus(w);const d=wordDetail(w);return `<div class="wrow"><b>${esc(w)}</b><span class="chip ${k}">${t}</span>${d?`<div class="sub">${d}</div>`:""}</div>`};
+  el.innerHTML=`
+    ${n?"":`<p class="note" style="margin:0">Nothing recorded yet. Progress shows up here after she plays.</p>`}
+    <div class="kpis">
+      <div class="stat"><b>${active} of 14</b><span>Days practiced</span></div>
+      <div class="stat"><b>${n?Math.round(f/n*100)+"%":"–"}</b><span>Right first try</span></div>
+      <div class="stat"><b>${n}</b><span>Words spelled</span></div>
+      <div class="stat"><b>${S.rounds}</b><span>Quests</span></div>
+    </div>
+    <div><h3 style="font-size:1.2rem">Last 2 weeks</h3>
+      <div class="bars" aria-label="Words practiced per day, last 14 days">${days.map((d,i)=>{const w=(S.log[d]||{}).w||0;
+        const dn=new Date(d+"T12:00:00").toLocaleDateString(undefined,{weekday:"narrow"});
+        return `<div class="bar ${i===13?"today":""}" title="${d}: ${w} words"><i class="${w?"on":""}" style="height:${w?Math.max(8,w/maxW*100):4}%"></i><span>${dn}</span></div>`}).join("")}</div>
+      <p class="note">Words practiced each day.</p></div>
+    <div><h3 style="font-size:1.2rem">This week's words</h3>
+      ${week.length?`<div>${[...new Set(week.map(x=>x.w))].map(row).join("")}</div>`:`<p class="note" style="margin:0">No words in the This Week section yet.</p>`}
+      <p class="note">Mastered means right on the first try 3 times in a row.</p></div>
+    ${year.length?`<div><h3 style="font-size:1.2rem">This year's words</h3><p class="note" style="margin:0">${yc.good} mastered · ${yc.ok} getting there · ${yc.bad} need practice · ${yc.new} not tried yet</p></div>`:""}
+    <div><h3 style="font-size:1.2rem">Trickiest words</h3>
+      ${trouble.length?`<div>${trouble.map(row).join("")}</div><p class="note">Misspellings are what she typed in Listen &amp; Spell rounds. These words come up more often in her games.</p>`:`<p class="note" style="margin:0">No trouble words yet.</p>`}</div>
+    <div class="row"><button class="big mint" id="cpy">Copy report</button></div>
+    <p class="msg" id="cm" style="min-height:0"></p>
+    <textarea id="rep" hidden readonly style="min-height:160px"></textarea>
+    <p class="note" style="margin:0">Progress is saved on this device only. Copy the report to text or email it to yourself, her teacher, or Claude.</p>
+    <div class="row" id="rz"><button class="ghost" id="rs">Reset all progress…</button></div>`;
+  $("#cpy").onclick=()=>{
+    const lines=[`Spelling Quest report, ${new Date().toLocaleDateString()}`,
+      `Practiced ${active} of the last 14 days. ${n} words spelled, ${n?Math.round(f/n*100):0}% right on the first try. ${S.rounds} quests total.`];
+    if(week.length){lines.push("","This week:");[...new Set(week.map(x=>x.w))].forEach(w=>{const x=S.ws[w];lines.push(`- ${w}: ${wordStatus(w)[1]}${x&&x.n?` (${x.f}/${x.n} first try${x.errs.length?`; wrote ${[...new Set(x.errs)].slice(-4).join(", ")}`:""})`:""}`)})}
+    if(year.length) lines.push("",`This year's words: ${yc.good} mastered, ${yc.ok} getting there, ${yc.bad} need practice, ${yc.new} not tried.`);
+    if(trouble.length){lines.push("","Trickiest words:");trouble.forEach(w=>{const x=S.ws[w];lines.push(`- ${w}: ${x.f}/${x.n} first try${x.errs.length?`; wrote ${[...new Set(x.errs)].slice(-4).join(", ")}`:""}`)})}
+    const text=lines.join("\n");const ta=$("#rep");ta.value=text;
+    const fallback=()=>{ta.hidden=false;ta.focus();ta.select();$("#cm").textContent="Select all and copy the text below."};
+    try{navigator.clipboard.writeText(text).then(()=>{$("#cm").textContent="Copied! Paste it into a text or email."},fallback)}catch(e){fallback()}
+  };
+  $("#rs").onclick=()=>{$("#rz").innerHTML=`<span class="note">Erase gems, stickers, streak and progress?</span><button class="ghost" id="ry" style="color:var(--bad)">Yes, reset</button><button class="ghost" id="rn">Keep</button>`;
+    $("#ry").onclick=()=>{const w=S.words;S={gems:0,xp:0,stickers:[],streak:0,lastDay:null,words:w,miss:{},rounds:0,bestCombo:0,sound:S.sound,ws:{},log:{}};save();parent()};
+    $("#rn").onclick=()=>parent();};
+}
+
+function wordsView(el){
+  const list=wordList();
+  el.innerHTML=`
+    <p class="note" style="margin:0">These words come from <b>words.txt</b> in your GitHub repo. To change them from any phone or computer, open that file on github.com, tap the pencil icon, edit, and commit. The game picks up the new list the next time it opens. GitHub can take a minute or two to publish a change.</p>
+    ${[["week","This week"],["year","This year"],["core","Should know"]].map(([k,nm])=>{const ws=list.filter(x=>x.sec===k);
+      return `<div><h3 style="font-size:1.2rem">${nm} <span class="note">(${ws.length})</span></h3>${ws.length?`<div class="tricky">${ws.map(x=>`<span style="background:var(--sky2)">${esc(x.w)}</span>`).join("")}</div>`:`<p class="note" style="margin:0">None yet.</p>`}</div>`}).join("")}
+    <p class="note" style="margin:0">Each game picks ${ROUND} words. Big Review uses every section and picks school words more often than should-know words. Words she misses come back more often in both.</p>
+    <div class="row"><button class="big mint" id="rf">Check for new words</button></div>
+    <p class="msg" id="sm"></p>`;
   $("#rf").onclick=async()=>{const m=$("#sm");m.className="msg";m.textContent="Checking…";
     const r=await syncWords();
-    if(r==="new"){m.textContent="Got the new list!";setTimeout(parent,800)}
+    if(r==="new"){m.textContent="Got the new list!";setTimeout(()=>parent("words"),800)}
     else if(r==="same") m.textContent="Already up to date.";
     else {m.className="msg bad";m.textContent="Couldn't reach GitHub. Using the saved list for now."}};
-  $("#rs").onclick=()=>{$("#rz").innerHTML=`<span class="note">Erase gems, stickers and streak?</span><button class="ghost" id="ry" style="color:var(--bad)">Yes, reset</button><button class="ghost" id="rn">Keep</button>`;
-    $("#ry").onclick=()=>{const w=S.words;S={gems:0,xp:0,stickers:[],streak:0,lastDay:null,words:w,miss:{},rounds:0,bestCombo:0,sound:S.sound};save();parent()};
-    $("#rn").onclick=parent;};
-  $("#bk").onclick=home;
 }
 
 // ---------- word list from GitHub (words.txt next to this page) ----------
