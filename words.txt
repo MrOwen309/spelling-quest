@@ -1,0 +1,165 @@
+# Spelling Quest word list
+# One word per line. To have the game read a sentence, add it after a | like this:
+#   bridge | We drove over a long bridge.
+# Lines starting with one # are notes and are ignored.
+# Lines starting with ## start a section. Keep the three section lines below.
+
+## THIS WEEK
+# This week's spelling words. The "This Week" button practices only these.
+
+
+## THIS YEAR
+# Words from her earlier spelling lists this year.
+
+
+## SHOULD KNOW
+# Common words a 3rd grader should already spell. Used in Big Review.
+about | Tell me about your day.
+after | We play outside after lunch.
+again | Can you read it again?
+always | I always wear my seat belt.
+another | May I have another turn?
+any | Do you have any crayons?
+around | We walked around the lake.
+asked | She asked a good question.
+away | The bird flew away.
+because | I wore a coat because it was cold.
+been | Have you been to the zoo?
+before | Brush your teeth before bed.
+better | I feel better today.
+both | I used both hands.
+bought | Mom bought new shoes.
+bring | Bring your book to class.
+brother | My brother is seven.
+buy | Let's buy some apples at the store.
+by | Sit by the window.
+called | Grandma called me today.
+came | Our cousins came to visit.
+can't | I can't find my shoe.
+carry | Can you carry this box?
+children | The children played tag.
+clean | Please clean your room.
+climb | Cats can climb trees.
+could | Could you help me?
+didn't | I didn't hear the bell.
+does | Does your dog do tricks?
+done | I am done with my homework.
+don't | Don't forget your lunch.
+each | Each kid got a sticker.
+early | We woke up early.
+eight | A spider has eight legs.
+enough | Is there enough room for me?
+every | I read every night.
+everyone | Everyone clapped at the end.
+eyes | Close your eyes and make a wish.
+family | My family loves pizza night.
+father | My father plays guitar.
+favorite | Purple is my favorite color.
+first | I was first in line.
+found | I found a shiny rock.
+four | A dog has four legs.
+friend | My friend lives next door.
+from | This card is from Grandma.
+full | My backpack is full.
+girl | The girl rode her bike.
+give | Give the dog a treat.
+goes | The bus goes to school.
+going | We are going to the park.
+great | That was a great movie!
+grow | Plants need water to grow.
+happened | What happened at recess?
+have | I have a red bike.
+hear | I can hear the rain.
+heard | We heard a loud noise.
+here | Come over here, please.
+house | Our house has a blue door.
+it's | It's time for lunch.
+its | The cat licked its paw.
+jumped | The frog jumped into the pond.
+knew | I knew the answer.
+know | Do you know my name?
+laugh | Silly jokes make me laugh.
+light | Turn on the light.
+little | The puppy is so little.
+live | Fish live in water.
+made | I made a card for you.
+many | How many cookies are left?
+might | It might rain today.
+money | I saved my money in a jar.
+morning | I eat breakfast every morning.
+mother | My mother reads to me.
+myself | I tied my shoes by myself.
+never | I never give up.
+new | I got a new backpack.
+night | The stars come out at night.
+of | I want a cup of milk.
+off | Turn off the TV.
+once | Once upon a time, there was a dragon.
+one | I have one sister.
+only | It was only a dream.
+other | Where is my other sock?
+our | This is our classroom.
+own | I have my own room.
+people | Lots of people came to the party.
+please | Please pass the salt.
+pretty | That is a pretty flower.
+pull | Pull the wagon up the hill.
+put | Put your coat on the hook.
+really | I really like this song.
+right | Raise your right hand.
+said | Mom said yes!
+school | I ride the bus to school.
+should | You should wear a helmet.
+some | May I have some juice?
+sometimes | Sometimes I sing in the shower.
+started | It started to snow.
+stopped | The car stopped at the light.
+sure | Are you sure?
+than | A whale is bigger than a fish.
+thank | Thank you for the gift.
+their | The kids rode their bikes.
+them | I gave them a snack.
+then | We ate dinner, then had dessert.
+there | Put the book over there.
+these | These shoes are too small.
+they | They are my neighbors.
+they're | They're going to the beach.
+thing | What is that thing?
+think | I think it will rain.
+those | Those are my socks.
+thought | I thought about my dog.
+threw | He threw the ball far.
+three | I have three pets.
+through | We walked through the woods.
+to | We went to the store.
+today | Today is a great day.
+together | We built the fort together.
+too | I want to come too.
+tried | I tried my best.
+two | I have two hands.
+until | Wait until the bell rings.
+upon | The cat sat upon the pillow.
+used | I used a pencil.
+very | I am very happy.
+walked | We walked to the park.
+want | I want a turn.
+wanted | She wanted ice cream.
+warm | The blanket is warm.
+was | It was a sunny day.
+watch | Let's watch a movie.
+water | Drink some water.
+went | We went swimming.
+were | We were late for the bus.
+what | What is your name?
+when | When is lunch?
+where | Where are my shoes?
+which | Which one do you want?
+while | Read while you wait.
+who | Who is at the door?
+whole | I ate the whole apple.
+why | Why is the sky blue?
+would | Would you like a snack?
+write | Write your name on the paper.
+wrote | I wrote a story.
+your | Is this your hat?
+you're | You're a great speller!
